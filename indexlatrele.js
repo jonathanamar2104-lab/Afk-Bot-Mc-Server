@@ -12,7 +12,7 @@ const config = {
   host: 'TheGakuranSchoolClub.aternos.me', 
   port: 31153,
   username: 'Daddy_Ryzen',
-  version: false 
+  version: '26.2' 
 }
 
 const MASTER = 'GamerBoyJona' 
