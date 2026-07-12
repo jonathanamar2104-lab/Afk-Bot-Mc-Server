@@ -1,7 +1,7 @@
 const mineflayer = require('mineflayer')
 const { pathfinder, Movements, goals } = require('mineflayer-pathfinder')
 const pvp = require('mineflayer-pvp').plugin
-const express = require('express') // Added for Render
+const express = require('express') 
 
 // Render requires an open web port, so we spin up a tiny web server
 const app = express()
@@ -21,23 +21,38 @@ function startBot() {
   console.log(`Starting instance...`);
   const bot = mineflayer.createBot(config)
 
+  // Load plugins freshly on every instance startup
   bot.loadPlugin(pathfinder)
   bot.loadPlugin(pvp)
 
   bot.on('chat', (username, message) => {
     if (username !== MASTER) return 
     const args = message.split(' ')
+    
     if (message.startsWith('$follow')) {
       const target = bot.players[args[1]]?.entity
-      if (target) bot.pathfinder.setGoal(new goals.GoalFollow(target, 2), true)
+      if (target) {
+        bot.pathfinder.setGoal(new goals.GoalFollow(target, 2), true)
+        bot.chat(`Following ${args[1]}`)
+      } else {
+        bot.chat(`I can't see ${args[1]}!`)
+      }
     }
+    
     if (message.startsWith('$hunting')) {
       const target = bot.players[args[1]]?.entity
-      if (target) bot.pvp.attack(target)
+      if (target) {
+        bot.pvp.attack(target)
+        bot.chat(`Target locked on ${args[1]}!`)
+      } else {
+        bot.chat(`I can't find ${args[1]} to hunt!`)
+      }
     }
+    
     if (message === '$stop') {
       bot.pathfinder.setGoal(null)
       bot.pvp.stop()
+      bot.chat('Stopping all actions.')
     }
   })
 
@@ -51,8 +66,10 @@ function startBot() {
     bot.pathfinder.setMovements(defaultMove)
   })
 
+  // Cleanly disconnect and clear old instances before starting a new one
   bot.on('end', (reason) => {
-    console.warn(`[DISCONNECT] Reason: ${reason}`);
+    console.warn(`[DISCONNECT] Reason: ${reason}. Reconnecting in 15 seconds...`);
+    bot.removeAllListeners(); // Prevents memory leak glitches
     setTimeout(startBot, 15000);
   })
 
