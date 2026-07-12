@@ -9,9 +9,9 @@ app.get('/', (req, res) => res.send('Shadow_Knight Status: Operational'))
 app.listen(process.env.PORT || 3000, () => console.log('Keep-alive server listening.'))
 
 const config = {
-  host: 'volatile-critter.sg.e4mc.link', 
-  port: 1212,
-  username: 'technoblade',
+  host: 'TheGakuranSchoolClub.aternos.me', 
+  port: 31153,
+  username: 'Daddy_Ryzen',
   version: false 
 }
 
