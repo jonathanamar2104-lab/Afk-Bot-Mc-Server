@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "indexlatrele.js",
   "scripts": {
-    "start": "node Indexlatrele.js"
+    "start": "node indexlatrele.js"
   },
   "dependencies": {
     "express": "^4.19.2",
