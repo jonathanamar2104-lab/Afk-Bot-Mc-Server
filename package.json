@@ -1,0 +1,14 @@
+{
+  "name": "shadow-knight-247",
+  "version": "1.0.0",
+  "main": "indexlatrele.js",
+  "scripts": {
+    "start": "node Indexlatrele.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "mineflayer": "^4.24.0",
+    "mineflayer-pathfinder": "^2.4.5",
+    "mineflayer-pvp": "^1.1.2"
+  }
+}
