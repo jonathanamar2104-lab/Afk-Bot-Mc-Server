@@ -16,6 +16,7 @@ const config = {
 }
 
 const MASTER = 'GamerBoyJona' 
+let antiKickInterval;
 
 function startBot() {
   console.log(`Starting instance...`);
@@ -62,14 +63,52 @@ function startBot() {
       bot.chat('/register Pass123 Pass123') 
       bot.chat('/login Pass123')
     }, 1500);
+    
     const defaultMove = new Movements(bot)
     bot.pathfinder.setMovements(defaultMove)
+
+    // Clear any leftover interval just in case
+    clearInterval(antiKickInterval);
+
+    // --- ANTI-KICK LOOP ---
+    // Every 30 seconds, the bot performs a tiny random action to stay active
+    antiKickInterval = setInterval(() => {
+      // If the bot is currently busy chasing or hunting, skip anti-kick movements
+      if (bot.pathfinder.goal || bot.pvp.target) return;
+
+      const actions = [
+        () => {
+          // Look randomly to the left or right
+          const yaw = bot.entity.yaw + (Math.random() - 0.5) * 2;
+          bot.look(yaw, bot.entity.pitch, true);
+        },
+        () => {
+          // Swing its main hand arm
+          bot.swingArm('right');
+        },
+        () => {
+          // Sneak and unsneak quickly
+          bot.setControlState('sneak', true);
+          setTimeout(() => bot.setControlState('sneak', false), 400);
+        },
+        () => {
+          // Take a tiny jump in place
+          bot.setControlState('jump', true);
+          setTimeout(() => bot.setControlState('jump', false), 200);
+        }
+      ];
+
+      // Pick one of the actions randomly and execute it
+      const randomAction = actions[Math.floor(Math.random() * actions.length)];
+      randomAction();
+    }, 30000); 
   })
 
   // Cleanly disconnect and clear old instances before starting a new one
   bot.on('end', (reason) => {
     console.warn(`[DISCONNECT] Reason: ${reason}. Reconnecting in 15 seconds...`);
-    bot.removeAllListeners(); // Prevents memory leak glitches
+    clearInterval(antiKickInterval); // Stop anti-kick when disconnected
+    bot.removeAllListeners(); 
     setTimeout(startBot, 15000);
   })
 
